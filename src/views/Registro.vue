@@ -11,7 +11,7 @@
             {{mensaje.texto}}
         </b-alert>
 
-        <form action="reg_user.html" @submit.prevent="checkFormProveedor()" 
+         <form action="reg_user.html" @submit.prevent="checkFormProveedor()" 
         v-if="tipoRegistro==false">
             <div class="form-group">
                 
@@ -93,7 +93,8 @@
                         <select name="municipio" id ="municipio" class="form-control" 
                         v-model="area.municipio">
                             <option value="">-- Municipio --</option>
-                            <option v-for="mun in arrMunicipio">
+                            <option v-for="mun in arrMunicipio" 
+                            @click="obtenerLocalidades(area.municipio)">
                                 {{mun.nomMunicipio}}</option>
                         </select>
                         
@@ -101,10 +102,10 @@
                     <div class="col">
                         <label for="loca">Localidad</label> :
                         <select name="loca" id = "loca" class="form-control" 
-                        v-model="area.colonia">
+                        v-model="area.localidad">
                             <option value="">-- LOCALIDAD --</option>
-                            <option v-for="loc in arrColonia" value="loc.numColonia">
-                                {{loc.nomColonia}}</option>
+                            <option v-for="loc in arrColonia">
+                                {{loc.nombreLocalidad}}</option>
                         </select>
                     </div> 
                 </div>
@@ -142,6 +143,7 @@ export default {
         return{
             dismissSecs: 5,
             dismissCountDown: 0,
+            arrLocalidadMunicipio:{},
             arrMunicipio:{},
             arrColonia:{},
             errors:[],
@@ -212,12 +214,20 @@ export default {
             this.axios.get('municipio_localidad')
             .then((response) => {
                 // console.log(response.data)
-                this.arrMunicipio = response.data;
+                this.arrLocalidadMunicipio = response.data;
+                let set= new Set( this.arrLocalidadMunicipio( JSON.stringify ) )
+                this.arrMunicipio = Array.from( set ).map( JSON.parse );
                 this.arrMunicipio.forEach(element => console.log(element.numMunicipio));
         })
             .catch((e)=>{
                 console.log('error' + e);
             })
+        },
+        obtenerLocalidades(slcMun){
+            this.arrColonia=this.arrLocalidadMunicipio.filter(item=>{
+                return item.nombreLocalidad===slcMun;
+            });
+            console.log(this.arrColonia);
         },
         checkFormProveedor(){
             this.errors = [];
@@ -243,6 +253,9 @@ export default {
             }else if(!this.comprobarContrasena(this.proveedor.contrasena,this.confirmaPass)){
                 console.log("pass no coincide");
                 this.errors.push('Las contraseñas no coinciden.');
+            }else if(!this.comprobarNumeroPass(this.proovedores.contrasena)){
+                console.log("pass no que no");
+                this.errors.push('Las contraseña debe contener al menos un número.');
             }
             if(!this.proveedor.nombreUser){
                 console.log("email nop");
@@ -289,6 +302,9 @@ export default {
             }else if(!this.comprobarContrasena(this.area.contrasena,this.confirmaPassArea)){
                 console.log("pass no coincide");
                 this.errors.push('Las contraseñas no coinciden.');
+            }else if(!this.comprobarNumeroPass(this.area.contrasena)){
+                console.log("pass no que no");
+                this.errors.push('Las contraseña debe contener al menos un número.');
             }
             if(!this.area.nombreUser){
                 console.log("nombre nop");
@@ -323,6 +339,11 @@ export default {
             else{
                 return false;
             }
+        },
+        comprobarNumeroPass(contraAct){
+           //var re= "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
+           return contraAct.replace("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$");
+            //return re.test(contraAct);
         },
     },
 }

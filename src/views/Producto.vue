@@ -41,7 +41,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in arrProductos :" key="index">
+                    <tr v-for="item in arrProductos">
                         <td>
                             {{item.articulo}}
                         </td>
@@ -82,7 +82,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in arrVerProductos :" key="index">
+                    <tr v-for="item in arrVerProductos">
                         <td>
                             {{item.articulo}}
                         </td>
@@ -123,7 +123,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in arrNoVerProductos :" key="index">
+                    <tr v-for="item in arrNoVerProductos">
                         <td>
                             {{item.articulo}}
                         </td>
