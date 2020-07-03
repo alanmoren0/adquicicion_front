@@ -13,15 +13,16 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import VuePaginate from 'vue-paginate';
  
 Vue.use(VueAxios, axios)
-
 Vue.use(Vuex)
+Vue.use(VuePaginate);
 
 // Agregamos la URL base de nuestra API
-axios.defaults.baseURL = 'http://localhost:3000/api';
+axios.defaults.baseURL ='http://proyecto.ngrok.io';  
+//'http://localhost:3000/api/';
 //'http://a08a5e7b8eb7.ngrok.io/'
-
 
 Vue.config.productionTip = false
 

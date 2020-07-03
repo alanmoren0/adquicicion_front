@@ -19,12 +19,12 @@
         <form action="#" v-on:submit.prevent="login()">
             <div class="form-group">
                 <label for="email">Usuario</label>
-                <input type="text" class="form-control" id="email" v-model="emailUser"
+                <input type="text" class="form-control" id="email" v-model="email"
                 placeholder="Ingrese usuario">
             </div>
             <div class="form-group">
                 <label for="pwd">Password:</label>
-                <input type="password" class="form-control" id="pwd" v-model="contrasena"
+                <input type="password" class="form-control" id="pwd" v-model="password"
                 placeholder="Contraseña">
             </div>
             <div class="btn-acces">
@@ -45,20 +45,21 @@ export default {
             dismissSecs: 5,
             dismissCountDown: 0,
             mensaje: {color: 'success', texto: ''},
-            emailUser:'',
-            contrasena:'',
+            email:'',
+            password:'',
         }
     },
 
     methods:{
         login(){
-            this.axios.post('login', {
-            emailUser: this.emailUser,
-            contrasena: this.contrasena
+            this.axios.post('signin', {
+            email: this.email,
+            password: this.password
             }).then(res => {
                 this.showAlert();
-                this.mensaje.texto = this.emailUser ;
+                this.mensaje.texto = this.email ;
                 this.mensaje.color = 'success';
+                window.location ='/producto';
             }).catch(err => {
                 console.log(err)
                 this.showAlert();

@@ -2,21 +2,22 @@
     <div class="container">
 
         <h1>Captura de requisiciones</h1>
-    <form  @submit.prevent="adquisicionALote()">
+    <form  @submit.prevent="adquisicionALote(adquicicion)">
     <div class="form-group">
         <div class="row">
             <div class="col">
                 <label for="subsec">Subsecretaría</label> :
-                <select name="subsec" id = "subsec" class="form-control">
-                    <option  v-for="subs in productoArr">
-                        {{subs.nombreProducto}}
+                <select name="subsec" id = "subsec" class="form-control"
+                v-model="adquicicion.ct_subsec">
+                    <option  v-for="subs in subsecretariaArr">
+                        {{subs.subsecretaria}}
                     </option>
                 </select>
             </div>
             <div class="col">
                 <label for="fechahoy">Fecha de elaboracion: </label>
                 <input type="date" id="fechahoy" name="fechahoy" class="form-control"
-                v-model="adquicicion.fechaElaboracion" />
+                v-model="adquicicion.fechae" />
             </div> 
         </div>
 
@@ -25,12 +26,12 @@
                 <label for="subsec">Área</label>
                 <input type="text" name="cct" id="cct" class="form-control" size="10" maxlength="10" readonly value="Área específica"
                 placeholder="funciona"
-                v-model="adquicicion.area" @focus="agregaArea()" @blur="cambiaEnDesenfoque()"/>
+                v-model="adquicicion.ctdestino"/>
             </div>
             <div class="col">
                 <label for="fechareq">Fecha que se requiere: </label>
                 <input type="date" id="fechareq" name="fechareq" class="form-control"
-                v-model="adquicicion.fechaRequerida" />
+                v-model="adquicicion.fechar" />
             </div> 
         </div>
 
@@ -38,7 +39,8 @@
             <div class="col">
                 <label for="subsec">Origen del recurso</label> :
                 <select name="subsec" id = "subsec" class="form-control"
-                v-model="adquicicion.origenRecurso">
+                v-model="adquicicion.fuente"
+                @blur="captarFuente(adquicicion.fuente)">
                     <option value="">-- Recurso --</option>
                     <option value="2013302">ESTATAL</option>
                     <option value="2013301">FEDERAL</option>
@@ -54,8 +56,12 @@
             </div>      
             <div class="col">
                 <label for="buscact">Nombre CT: </label>
-                <input type="text" name="buscact" id="buscact" class="form-control" size="50" maxlength="50" placeholder="Nombre del CT a buscar"
-                v-model="adquicicion.nombreCT"/>
+                <select name="buscact" id = "buscact" class="form-control"
+                v-model="adquicicion.ctdestino">
+		            <option v-for="prod in arrCT">
+                        {{prod.nombre}}
+                    </option>
+                </select>
             </div>        
         </div>
         <div class="row">
@@ -69,14 +75,19 @@
         <div class="row">
             <div class="col">
                 <label for="accion">Acción </label>
-                <input type="number" name="accion" id="accion" class="form-control" min="1" max="999" step="1" value="100"
-                v-model="adquicicion.accion"/>
+                <select name="accion" id = "accion" class="form-control"
+                v-model="adquicicion.accion"
+                @blur="descripcionAccion(adquicicion.accion)">
+                    <option v-for="part in accionArr">
+                        {{part}}
+                    </option>
+                </select>
             </div>      
             <div class="col">
                 <label for="nomaccion">Nombre de acción </label>
                 <input type="text" name="nomaccion" id="nomaccion" class="form-control" 
-                    value="Administración de recursos materiales y financieros para la adecuada prestación de los servicios educativos por medio de la gestión central" 
-                    readonly />
+                readonly/>
+                
             </div>      
         </div>
 
@@ -84,16 +95,16 @@
             <div class="col">
                 <label for="partida">Partida</label> :
                 <select name="partida" id = "partida" class="form-control"
-                v-model="adquicicion.partida">
+                v-model="adquicicion.partida"
+                @blur="descripcionPartida(adquicicion.partida)">
                     <option v-for="part in partidaArr">
-                        {{part.nomPartida}}
+                        {{part}}
                     </option>
                 </select>
             </div>
             <div class="col">
                 <label for="nompartida">Nombre partida:</label>
-                <input type="text" name="nompartida" id="nompartida" class="form-control" 
-                    value="Asignaciones destinadas a la adquisición de materiales y artículos diversos, propios para el uso de las oficinas, tales como: papelería, formas, libretas, carpetas, y cualquier tipo de papel, vasos y servilletas desechables, limpia tipos, rollos fotográficos; útiles de escritorio como engrapadoras, perforadoras manuales, sacapuntas; artículos de dibujo, correspondencia y archivo; cestos de basura, y otros productos similares. Incluye la adquisición de artículos de envoltura, sacos y valijas, entre otros" 
+                <input type="textarea" name="nompartida" id="nompartida" class="form-control" 
                     readonly />
             </div>    
         </div>
@@ -104,13 +115,14 @@
                 <input type="text" name="buscaprod" id="buscaprod" class="form-control" size="50" maxlength="50" value="MICA"/>
             </div>
             <div class="col">
-                <label for="producto">Producto</label> :
+                <label for="producto">Producto</label>
                 <select name="producto" id = "producto" class="form-control"
-                v-model="adquicicion.producto">
-                    <option v-for="prod in productoArr">
-                        {{prod.nomProducto}}
-                    </option>
-                </select>
+                v-model="adquicicion.articulo"
+                @blur="this.productoArr(adquicicion.articulo)">
+		        <option v-for="prod in productoArr">
+			            {{prod.descripcion}}
+		        </option>
+</select>
             </div>
             <div class="col">
                 <label for="unidad">Unidad</label> :
@@ -165,8 +177,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item in loteArr">
-                        <td>1</td>
+                    <tr v-for="(item,i) in loteArr" :key="i">
+                        <th scope="row">{{item.length}}</th>
                         <td>{{item.cantidad}}</td>
                         <td>{{item.unidad}}</td>
                         <td>{{item.descripcion}}</td>
@@ -196,24 +208,36 @@ export default {
     data(){
         return{
             subsecretariaArr:[],
+            accionArr:[],
             partidaArr:[],
             productoArr:[],
+            fuentesArr:[],
+            arrCT:[],
+            datosAdquisicion:[],
             loteArr:[],
             adquicicion:[{
-                    subsecretaria:'',fechaElaboracion:'',area:'',
-                    fechaRequerida:'',origenRecurso:'', destinoCT:'',
-                    nombreCT:'',domicilioEntrega:'',accion:'',
-                    nombreAccion:'',partida:'',nombrePartida:'',
-                    producto:'',unidad:'',cantidad:'',descripcion:''
+                    ct_subsec:'',fechae:'',fechar:'',
+                    fuente:'',ctdestino:'',
+                    accion:'',status:'',partida:'',
+                    articulo:'',unidad:'',descripcion:'',
+                    cantidad:'',
             }],
             funciona:'a nu ma si era así',
             otroTexti:'si cambio :o',
+            nombreAccion:'',
+            nombrePartida:'',
+            domicilioEntrega:'',
+            usuario:'',
+            nombreAccion:'',
+            nombrePartida:'',
         }
     },
     created(){
-
-
-
+        this.obtenerSubsecretaria();
+        this.obtenerCT();
+    },
+    computed:{
+        options: () => this.productoArr,
     },
     methods:{
         registrarAdquisicion(){
@@ -243,51 +267,150 @@ export default {
         showAlert() {
             this.dismissCountDown = this.dismissSecs
         },
+        obtenerSesion(){
+            this.axios.get('session-check')
+            .then((response) => {
+                // console.log(response.data)
+                this.usuario = response.data;
+                console.log(this.usuario);
+                document.getElementById("cct").value=this.usuario.cv_cct;
+        })
+            .catch((e)=>{
+                console.log('error' + e);
+            })
+        },
         obtenerSubsecretaria(){
-            this.axios.get('subsecretaria')
+            this.axios.get('subsecretarias')
             .then((response) => {
                 // console.log(response.data)
                 this.subsecretariaArr = response.data;
+                console.log(response.data);
         })
             .catch((e)=>{
                 console.log('error' + e);
             })
         },
-        obtenerPartida(){
-            this.axios.get('partida')
+        obtenerFuente(){
+            this.axios.get(`presupuestal`)
             .then((response) => {
                 // console.log(response.data)
-                this.partidaArr = response.data;
+                this.fuentesArr = response.data;
         })
             .catch((e)=>{
                 console.log('error' + e);
             })
         },
-        obtenerProducto(){
-            this.axios.get('producto-verificado')
+        captarFuente(fuente){
+            if(this.adquicicion.fuente=='FEDERAL'){
+                fuente=2023301;
+            }else if(this.adquicicion.fuente=='ESTATAL'){
+                fuente=2013302;
+            }
+            this.axios.get(`adquisiciones/${fuente}`)
+            .then((response) => {
+                console.log('response ',response.data)
+                this.accionArr = response.data.acciones;
+                this.partidaArr=response.data.partidas;
+        })
+            .catch((e)=>{
+                console.log('error' + e);
+            })
+        },
+        descripcionAccion(accion){
+            this.axios.get(`accion-desc/${accion}`)
+            .then((response) => {
+                console.log('response ',response);
+                this.nombreAccion = response.data;
+                console.log('descripcion ',this.nombreAccion);
+                this.colocaNombreAccion(this.nombreAccion);
+
+        })
+            .catch((e)=>{
+                console.log('error' + e);
+            })
+        },
+         descripcionPartida(partida){
+            this.axios.get(`partida-desc/${partida}`)
+            .then((response) => {
+                console.log('response ',response);
+                this.nombrePartida = response.data;
+                console.log('descripcion ',this.nombrePartida);
+                this.colocaNombrePartida(this.nombrePartida);
+                this.obtenerProducto(partida);
+        })
+            .catch((e)=>{
+                console.log('error' + e);
+            })
+        },
+
+        obtenerAccion(fuente){
+            this.axios.get(`partida-verificada${fuente}`)
             .then((response) => {
                 // console.log(response.data)
+                this.accionArr = response.data;
+        })
+            .catch((e)=>{
+                console.log('error' + e);
+            })
+        },
+        obtenerCT(){
+            this.axios.get('centro-trabajo')
+            .then((response) => {
+                console.log(response.data);
+                this.arrCT = response.data;
+        })
+            .catch((e)=>{
+                console.log('error' + e);
+            })
+        },
+        obtenerProducto(partida){
+            this.axios.get(`productos/${partida}`)
+            .then((response) => {
+                console.log(response.data)
                 this.productoArr = response.data;
         })
             .catch((e)=>{
                 console.log('error' + e);
             })
         },
-        adquisicionALote(){
-            this.loteArr.push(this.adquicicion);
-            console.log(this.adquicicion);
+        verificaArea(idSubsec){
+            this.axios.get('subsecretaria-verificada')
+            .then((response) => {
+                this.adquicicion.ct_subsec=response.data;
+                this.colocaNombreArea(this.adquicicion.ct_subsec);
+        })
+            .catch((e)=>{
+                console.log('error' + e);
+                this.showAlert();
+                this.mensaje.texto = "No existe esta Area";
+                this.mensaje.color = 'danger';
+            })
         },
-        agregaArea(){
-            document.getElementById("cct").value=this.funciona;
+        MuestraDireccion(nomCT){
+           
         },
-        cambiaEnDesenfoque(){
-            document.getElementById("cct").value=this.otroTexti;
+        adquisicionALote(nuevaAdquisicion){
+            this.nuevoLote = new Object({
+                ...nuevaAdquisicion
+            });
+            this.loteArr.push(this.nuevoLote);
+            console.log(this.nuevoLote);
+            console.log("extension ",this.loteArr.length);
+            console.log("objetos ",this.loteArr);
         },
-        colocaNombreAccion(){
-            document.getElementById("cct").value=this.otroTexti;
+        colocaNombreAccion(nombAccion){
+            console.log('nombre accion ',nombAccion)
+            document.getElementById("nomaccion").value=nombAccion;
         },
-        colocaNombrePartida(){
-            document.getElementById("cct").value=this.otroTexti;
+        colocaNombrePartida(nombPartida){
+            document.getElementById("nompartida").value=nombPartida;
+        },
+         colocaDescripcion(descProd){
+            this.adquicicion.descripcion=descProd;
+            document.getElementById("descripcion").value=this.adquicicion.descripcion;
+        },
+        limpiarFormulario(){
+            
         },
 
     }

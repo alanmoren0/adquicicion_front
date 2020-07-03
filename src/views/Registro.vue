@@ -17,7 +17,7 @@
                 
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="tipouser" value="proveedor"
+                        <input type="radio" class="form-check-input" name="tipouser" value="Proveedor"
                         v-model="proveedor.typeUser"
                         @click="tipoRegistro=false">Proveedor
                     </label>
@@ -47,7 +47,7 @@
                 <div class="form-group">
                     <label for="pass">Contraseña</label>
                     <input type="password" class="form-control" id="pass" 
-                    v-model="proveedor.contrasena">
+                    v-model="proveedor.password">
                 </div>
                 <div class="form-group">
                     <label for="passc">Confirma contraseña</label>
@@ -70,14 +70,14 @@
                 
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="tipouser" value="proveedor"
+                        <input type="radio" class="form-check-input" name="tipouser" value="Proveedor"
                         v-model="area.typeUser"
                         @click="tipoRegistro=false">Proveedor
                     </label>
                 </div>
                 <div class="form-check">
                     <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="tipouser"  value="area" 
+                        <input type="radio" class="form-check-input" name="tipouser"  value="Area" 
                         v-model="area.typeUser"
                         @click="tipoRegistro=true">Área o departamento
                     </label>
@@ -91,11 +91,11 @@
                     <div class="col">
                         <label for="municipio">Municipio</label> :
                         <select name="municipio" id ="municipio" class="form-control" 
-                        v-model="area.municipio">
+                        v-model="area.municipio"
+                        @blur="obtenerLocalidades(area.municipio)">
                             <option value="">-- Municipio --</option>
-                            <option v-for="mun in arrMunicipio" 
-                            @click="obtenerLocalidades(area.municipio)">
-                                {{mun.nomMunicipio}}</option>
+                            <option v-for="mun in arrMunicipio">
+                                {{mun.nombreMunicipio}}</option>
                         </select>
                         
                     </div>
@@ -117,7 +117,7 @@
                 <div class="form-group">
                     <label for="pass">Contraseña</label>
                     <input type="password" class="form-control" id="pass" 
-                    v-model="area.contrasena">
+                    v-model="area.password">
                 </div>
                 <div class="form-group">
                     <label for="passc">Confirma contraseña</label>
@@ -152,12 +152,12 @@ export default {
             area:{
                 cv_cct:'',municipio:'',localidad:'',
                 email:'',
-                typeUser:'',nombreUser:'',contrasena:''
+                typeUser:'',nombreUser:'',password:''
             },
             proveedor:{
                 numCedula:'',rfc:'',
                 email:'',
-                typeUser:'',nombreUser:'',contrasena:''
+                typeUser:'',nombreUser:'',password:''
             },
             usuario:{email:'',
                 tipo:'',nombreUser:'',contrasena:''},
@@ -179,13 +179,38 @@ export default {
     },
     methods:{
         registrarUsuario(){
-            console.log(this.usuario.tipo);
+            console.log(this.proveedor.typeUser);
 
-            this.axios.post('nuevo-usuario', this.usuario)
+            this.axios.post('signup', this.proveedor)
             .then(res => {
                 // Alerta de mensaje
+                console.log(res.data);
                 this.showAlert();
-                this.mensaje.texto = this.usuario.tipo;
+                this.mensaje.texto = this.proveedor.typeUser;
+                this.mensaje.color = 'success';
+            })
+            .catch( e => {
+                console.log(e.response);
+                if(e.response.data.error.errors.nombre.message){
+                    this.mensaje.texto = e.response.data.error.errors.nombre.message;
+                }else{
+                    this.mensaje.texto = 'Error del sistema';
+                }
+
+                  // Alerta de mensaje
+                this.mensaje.color = 'danger';
+                this.showAlert();
+            })
+        },
+        registrarUsuarioArea(){
+            console.log(this.area.typeUser);
+
+            this.axios.post('signup-area', this.area)
+            .then(res => {
+                // Alerta de mensaje
+                console.log(res.data);
+                this.showAlert();
+                this.mensaje.texto = this.area.typeUser;
                 this.mensaje.color = 'success';
             })
             .catch( e => {
@@ -211,13 +236,11 @@ export default {
             this.showAlert();
             this.mensaje.texto = 'Ejecutado!'
             this.mensaje.color = 'danger';
-            this.axios.get('municipio_localidad')
+            this.axios.get('localidadmunicipio')
             .then((response) => {
                 // console.log(response.data)
                 this.arrLocalidadMunicipio = response.data;
-                let set= new Set( this.arrLocalidadMunicipio( JSON.stringify ) )
-                this.arrMunicipio = Array.from( set ).map( JSON.parse );
-                this.arrMunicipio.forEach(element => console.log(element.numMunicipio));
+                this.arrMunicipio = this.removeDuplicates(this.arrLocalidadMunicipio,'nombreMunicipio');
         })
             .catch((e)=>{
                 console.log('error' + e);
@@ -225,7 +248,7 @@ export default {
         },
         obtenerLocalidades(slcMun){
             this.arrColonia=this.arrLocalidadMunicipio.filter(item=>{
-                return item.nombreLocalidad===slcMun;
+                return item.nombreMunicipio===slcMun;
             });
             console.log(this.arrColonia);
         },
@@ -244,19 +267,19 @@ export default {
                 console.log("email nop");
                 this.errors.push('La correo es obligatorio.');
             }
-            if(!this.proveedor.contrasena){
+            if(!this.proveedor.password){
                 console.log("pass nop");
                 this.errors.push('La contraseña es obligatorio.');
-            }else if(!this.verificaLargoPass(this.proveedor.contrasena)){
+            }else if(!this.verificaLargoPass(this.proveedor.password)){
                 console.log("pass cortita");
                 this.errors.push('La contraseña debe ser superios a seis carácteres.');
-            }else if(!this.comprobarContrasena(this.proveedor.contrasena,this.confirmaPass)){
+            }else if(!this.comprobarContrasena(this.proveedor.password,this.confirmaPass)){
                 console.log("pass no coincide");
                 this.errors.push('Las contraseñas no coinciden.');
-            }else if(!this.comprobarNumeroPass(this.proovedores.contrasena)){
-                console.log("pass no que no");
-                this.errors.push('Las contraseña debe contener al menos un número.');
-            }
+            }//else if(!this.comprobarNumeroPass(this.proovedor.password)){
+                //console.log("pass no que no");
+                //this.errors.push('Las contraseña debe contener al menos un número.');
+            //}
             if(!this.proveedor.nombreUser){
                 console.log("email nop");
                 this.errors.push('La correo es obligatorio.');
@@ -267,6 +290,8 @@ export default {
                 this.showAlert();
                 this.mensaje.texto = this.errors;
                 this.mensaje.color = 'danger';
+            }else{
+                this.registrarUsuario();
             }
 
         },
@@ -281,28 +306,28 @@ export default {
                 console.log("cct nop");
                 this.errors.push('La clave del centro de trabajo es obligatoria.');
             }
-            if(!this.area.municipio){
-                console.log("mun nop");
-                this.errors.push('Municipio es obligatorio.');
-            }
-            if(!this.area.localidad){
-                console.log("loc nop");
-                this.errors.push('La localidad es obligatoria.');
-            }
+            //if(!this.area.municipio){
+                //console.log("mun nop");
+              //  this.errors.push('Municipio es obligatorio.');
+            //}
+            //if(!this.area.localidad){
+              //  console.log("loc nop");
+                //this.errors.push('La localidad es obligatoria.');
+            //}
             if(!this.area.email){
                 console.log("email nop");
                 this.errors.push('El correo electrónico es obligatorio.');
             }
-            if(!this.area.contrasena){
+            if(!this.area.password){
                 console.log("pass nop");
                 this.errors.push('La contraseña es obligatorio.');
-            }else if(!this.verificaLargoPass(this.area.contrasena)){
+            }else if(!this.verificaLargoPass(this.area.password)){
                 console.log("pass cortita");
                 this.errors.push('La contraseña debe ser superios a seis carácteres.');
-            }else if(!this.comprobarContrasena(this.area.contrasena,this.confirmaPassArea)){
+            }else if(!this.comprobarContrasena(this.area.password,this.confirmaPassArea)){
                 console.log("pass no coincide");
                 this.errors.push('Las contraseñas no coinciden.');
-            }else if(!this.comprobarNumeroPass(this.area.contrasena)){
+            }else if(!this.comprobarNumeroPass(this.area.password)){
                 console.log("pass no que no");
                 this.errors.push('Las contraseña debe contener al menos un número.');
             }
@@ -316,6 +341,8 @@ export default {
                 this.showAlert();
                 this.mensaje.texto = this.errors;
                 this.mensaje.color = 'danger';
+            }else{
+                this.registrarUsuarioArea();
             }
 
         },
@@ -344,6 +371,19 @@ export default {
            //var re= "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
            return contraAct.replace("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$");
             //return re.test(contraAct);
+        },
+        removeDuplicates(originalArray, prop) {
+            var newArray = [];
+            var lookupObject  = {};
+
+            for(var i in originalArray) {
+                lookupObject[originalArray[i][prop]] = originalArray[i];
+            }
+
+            for(i in lookupObject) {
+                newArray.push(lookupObject[i]);
+            }
+            return newArray;
         },
     },
 }
