@@ -2,13 +2,13 @@
     <div class="container">
 
         <h1>Captura de requisiciones</h1>
-    <form  @submit.prevent="adquisicionALote(adquicicion)">
+    <form  @submit.prevent="adquisicionALote(adquisicion)">
     <div class="form-group">
         <div class="row">
             <div class="col">
                 <label for="subsec">Subsecretaría</label> :
                 <select name="subsec" id = "subsec" class="form-control"
-                v-model="adquicicion.ct_subsec">
+                v-model="adquisicion.ct_subsec">
                     <option  v-for="subs in subsecretariaArr">
                         {{subs.subsecretaria}}
                     </option>
@@ -17,7 +17,7 @@
             <div class="col">
                 <label for="fechahoy">Fecha de elaboracion: </label>
                 <input type="date" id="fechahoy" name="fechahoy" class="form-control"
-                v-model="adquicicion.fechae" />
+                v-model="adquisicion.fechae" />
             </div> 
         </div>
 
@@ -26,12 +26,12 @@
                 <label for="subsec">Área</label>
                 <input type="text" name="cct" id="cct" class="form-control" size="10" maxlength="10" readonly value="Área específica"
                 placeholder="funciona"
-                v-model="adquicicion.ctdestino"/>
+                v-model="adquisicion.ctdestino"/>
             </div>
             <div class="col">
                 <label for="fechareq">Fecha que se requiere: </label>
                 <input type="date" id="fechareq" name="fechareq" class="form-control"
-                v-model="adquicicion.fechar" />
+                v-model="adquisicion.fechar" />
             </div> 
         </div>
 
@@ -39,8 +39,8 @@
             <div class="col">
                 <label for="subsec">Origen del recurso</label> :
                 <select name="subsec" id = "subsec" class="form-control"
-                v-model="adquicicion.fuente"
-                @blur="captarFuente(adquicicion.fuente)">
+                v-model="adquisicion.fuente"
+                @blur="captarFuente(adquisicion.fuente)">
                     <option value="">-- Recurso --</option>
                     <option value="2013302">ESTATAL</option>
                     <option value="2013301">FEDERAL</option>
@@ -52,12 +52,12 @@
             <div class="col">
                 <label for="cctdestino">Destino del bien: </label>
                 <input type="text" name="cctdestino" id="cctdestino" class="form-control" size="10" maxlength="10" placeholder="Clave CT"
-                v-model="adquicicion.destinoCT"/>
+                v-model="adquisicion.destinoCT"/>
             </div>      
             <div class="col">
                 <label for="buscact">Nombre CT: </label>
                 <select name="buscact" id = "buscact" class="form-control"
-                v-model="adquicicion.ctdestino">
+                v-model="adquisicion.ctdestino">
 		            <option v-for="prod in arrCT">
                         {{prod.nombre}}
                     </option>
@@ -68,7 +68,7 @@
             <div class="col">
                 <label for="domicilioct">Domicilio de entrega: </label>
                 <input type="text" name="domicilioct" id="domicilioct" class="form-control" placeholder="Específique domicilio de entrega" 
-                v-model="adquicicion.domicilioEntrega"/>
+                v-model="adquisicion.domicilioEntrega"/>
             </div>      
         </div>
 
@@ -76,8 +76,8 @@
             <div class="col">
                 <label for="accion">Acción </label>
                 <select name="accion" id = "accion" class="form-control"
-                v-model="adquicicion.accion"
-                @blur="descripcionAccion(adquicicion.accion)">
+                v-model="adquisicion.accion"
+                @blur="descripcionAccion(adquisicion.accion)">
                     <option v-for="part in accionArr">
                         {{part}}
                     </option>
@@ -95,8 +95,8 @@
             <div class="col">
                 <label for="partida">Partida</label> :
                 <select name="partida" id = "partida" class="form-control"
-                v-model="adquicicion.partida"
-                @blur="descripcionPartida(adquicicion.partida)">
+                v-model="adquisicion.partida"
+                @blur="descripcionPartida(adquisicion.partida)">
                     <option v-for="part in partidaArr">
                         {{part}}
                     </option>
@@ -117,8 +117,8 @@
             <div class="col">
                 <label for="producto">Producto</label>
                 <select name="producto" id = "producto" class="form-control"
-                v-model="adquicicion.articulo"
-                @blur="this.productoArr(adquicicion.articulo)">
+                v-model="adquisicion.articulo"
+                @blur="this.productoArr(adquisicion.articulo)">
 		        <option v-for="prod in productoArr">
 			            {{prod.descripcion}}
 		        </option>
@@ -126,8 +126,8 @@
             </div>
             <div class="col">
                 <label for="unidad">Unidad</label> :
-                <select name="Unidad" id = "Unidad" class="form-control"
-                v-model="adquicicion.unidad">
+                <select  name="Unidad" id = "Unidad" class="form-control"
+                v-model="adquisicion.unidad">
                     <option value='PAQUETE'>Paquete</option>
                     <option value='PIEZA'>Pieza</option>
                 </select>
@@ -135,7 +135,7 @@
             <div class="col">
                 <label for="cantidad">Cantidad </label>
                 <input type="number" name="cantidad" id="cantidad" class="form-control" min="1" max="9999999" step="1"
-                v-model="adquicicion.cantidad"/>
+                v-model="adquisicion.cantidad"/>
             </div>   
         </div>
 
@@ -144,7 +144,7 @@
                 <div class="form-group">
                     <label for="descripcion">Descripción detallada del bien o servicio:</label>
                     <textarea class="form-control" rows="5" id="descripcion" name="descripcion"
-                    v-model="adquicicion.descripcion">
+                    v-model="adquisicion.descripcion">
                         MICA TERMICA DE 15X11.5 CM C/100
                     </textarea>
                 </div>
@@ -198,7 +198,8 @@
         </div>
         </form>
          <div class="row">
-            <button type="button" class="btn btn-success btn-block">Enviar</button>
+            <button type="button" class="btn btn-success btn-block"
+            @click="registrarAdquisicion(loteArr)">Enviar</button>
         </div>
         
     </div>
@@ -215,10 +216,10 @@ export default {
             arrCT:[],
             datosAdquisicion:[],
             loteArr:[],
-            adquicicion:[{
+            adquisicion:[{
                     ct_subsec:'',fechae:'',fechar:'',
                     fuente:'',ctdestino:'',
-                    accion:'',status:'',partida:'',
+                    accion:'',partida:'',
                     articulo:'',unidad:'',descripcion:'',
                     cantidad:'',
             }],
@@ -240,12 +241,13 @@ export default {
         options: () => this.productoArr,
     },
     methods:{
-        registrarAdquisicion(){
-            this.axios.post('nueva-adquisicion', this.adquicicion)
+        registrarAdquisicion(lotes){
+            console.log('adquisiciones ',lotes);
+            this.axios.post('adquisicion', lotes)
             .then(res => {
                 // Alerta de mensaje
                 this.showAlert();
-                this.mensaje.texto = "registro correcto";
+                this.mensaje.texto = "Registro correcto";
                 this.mensaje.color = 'success';
             })
             .catch( e => {
@@ -301,9 +303,9 @@ export default {
             })
         },
         captarFuente(fuente){
-            if(this.adquicicion.fuente=='FEDERAL'){
+            if(this.adquisicion.fuente=='FEDERAL'){
                 fuente=2023301;
-            }else if(this.adquicicion.fuente=='ESTATAL'){
+            }else if(this.adquisicion.fuente=='ESTATAL'){
                 fuente=2013302;
             }
             this.axios.get(`adquisiciones/${fuente}`)
@@ -376,8 +378,8 @@ export default {
         verificaArea(idSubsec){
             this.axios.get('subsecretaria-verificada')
             .then((response) => {
-                this.adquicicion.ct_subsec=response.data;
-                this.colocaNombreArea(this.adquicicion.ct_subsec);
+                this.adquisicion.ct_subsec=response.data;
+                this.colocaNombreArea(this.adquisicion.ct_subsec);
         })
             .catch((e)=>{
                 console.log('error' + e);
@@ -390,9 +392,12 @@ export default {
            
         },
         adquisicionALote(nuevaAdquisicion){
-            this.nuevoLote = new Object({
-                ...nuevaAdquisicion
-            });
+            console.log('adquisicion entra',nuevaAdquisicion);
+            this.nuevoLote={ nuect_subsec:nuevaAdquisicion.ct_subsec,fechae:nuevaAdquisicion.fechae,fechar:nuevaAdquisicion.fechar,
+                    fuente:nuevaAdquisicion.fuente,ctdestino:nuevaAdquisicion.ctdestino,
+                    accion:nuevaAdquisicion.accion,partida:nuevaAdquisicion.partida,
+                    articulo:nuevaAdquisicion.articulo,unidad:nuevaAdquisicion.unidad,descripcion:nuevaAdquisicion.descripcion,
+                    cantidad:nuevaAdquisicion.cantidad,}
             this.loteArr.push(this.nuevoLote);
             console.log(this.nuevoLote);
             console.log("extension ",this.loteArr.length);
@@ -406,13 +411,22 @@ export default {
             document.getElementById("nompartida").value=nombPartida;
         },
          colocaDescripcion(descProd){
-            this.adquicicion.descripcion=descProd;
-            document.getElementById("descripcion").value=this.adquicicion.descripcion;
+            this.adquisicion.descripcion=descProd;
+            document.getElementById("descripcion").value=this.adquisicion.descripcion;
         },
         limpiarFormulario(){
-            
+            this.accionArr=[];
+            this.partidaArr=[];
+            this.productoArrArr=[];
+            this.colocaNombrePartida('');
+            this.colocaNombreAccion('');
+            this.adquisicion.cantidad='';
         },
-
+        colocaDatosCT(destino,calle,numeroext, colonia,municipio,localidad){
+            this.domicilio=calle+', '+numeroext+', '+colonia+', '+municipio+', '+localidad;
+            document.getElementById("cctdestino").value=destino;
+            document.getElementById("domicilioct").value=this.domicilio;
+        }
     }
 }
 </script>

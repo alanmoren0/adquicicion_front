@@ -239,7 +239,7 @@ export default {
             this.axios.get('localidadmunicipio')
             .then((response) => {
                 // console.log(response.data)
-                this.arrLocalidadMunicipio = response.data;
+                this.arrLocalidadMunicipio = jsonMun;
                 this.arrMunicipio = this.removeDuplicates(this.arrLocalidadMunicipio,'nombreMunicipio');
         })
             .catch((e)=>{
